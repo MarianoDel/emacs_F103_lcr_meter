@@ -1,0 +1,73 @@
+//----------------------------------------------------------
+// ##
+// ## @Author: Med
+// ## @Editor: Emacs - ggtags
+// ## @TAGS:   Global
+// ##
+// #### RES_MENU.C #########################################
+//----------------------------------------------------------
+
+// Includes --------------------------------------------------------------------
+#include "res_menu.h"
+#include "screen.h"
+
+
+// Module Private Types & Macros -----------------------------------------------
+typedef enum {
+    RES_INIT,
+    RES_MEAS
+}
+
+// Externals -------------------------------------------------------------------
+
+
+// Globals ---------------------------------------------------------------------
+res_state_e res_state = RES_INIT;
+
+
+// Module Private Functions ----------------------------------------------------
+
+
+// Module Functions ------------------------------------------------------------
+void Res_Menu (void)
+{
+    unsigned short res_int = 0;
+    unsigned short res_dec = 0;    
+    char multiplier = 0;
+    resist_meas_e meas_result = RES_MEAS_NONE;
+    
+    switch (res_state)
+    {
+    case RES_INIT:
+	SCREEN_Clear();
+	SCREEN_Text2_Line1("Resistance");
+	res_state++;
+	break;
+
+    case RES_MEAS:
+	meas_result = Resistance_Meas(&res_int, &res_dec, &multiplier);
+	if (meas_result == RES_MEAS_GETTED)
+	{
+	    sprintf(buff, "%d.02%d%c",
+		    res_int,
+		    res_dec,
+		    multiplier);
+	    SCREEN_Text2_BlankLine2();
+	    SCREEN_Text2_Line2(buff);
+	}
+	else if (meas_result == RES_MEAS_TOO_HIGH)
+	{
+	    SCREEN_Text2_BlankLine2();
+	    SCREEN_Text2_Line2("OL.");
+	}
+	break;
+
+    default:
+	res_state = RES_INIT;
+	break;
+    }
+    
+}
+
+
+//--- end of file ---//
